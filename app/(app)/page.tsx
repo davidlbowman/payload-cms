@@ -6,32 +6,42 @@ import {
 	CardFooter,
 	CardHeader,
 } from "@/components/ui/card";
+import type { Team } from "@/payload-types";
+import config from "@/payload.config";
 import Image from "next/image";
+import { getPayload } from "payload";
 
-export default function Home() {
-	const founders = [
-		{
-			name: "Jane Doe",
-			role: "CEO",
-			src: "/janeDoe.webp",
-			description:
-				"Jane brings over 15 years of experience in tech leadership and innovation.",
-		},
-		{
-			name: "John Smith",
-			role: "CTO",
-			src: "/johnSmith.webp",
-			description:
-				"John is a visionary technologist with a passion for cutting-edge solutions.",
-		},
-		{
-			name: "Alice Johnson",
-			role: "COO",
-			src: "/aliceJohnson.webp",
-			description:
-				"Alice excels in optimizing operations and driving sustainable growth.",
-		},
-	];
+export default async function Home() {
+	const payload = await getPayload({ config });
+	const { docs: teamMembers } = await payload.find({
+		collection: "Team",
+		depth: 2,
+		sort: "order",
+	});
+
+	const TeamMembers = (teamMembers as Team[]).map((member) => {
+		const image = member.image as { url: string; alt: string };
+		return (
+			<Card key={member.id} className="flex flex-col">
+				<CardHeader>
+					<Image
+						src={image.url}
+						alt={image.alt || member.name}
+						width={200}
+						height={200}
+						className="rounded-full mx-auto"
+					/>
+					<h3 className="text-xl font-semibold text-center">{member.name}</h3>
+				</CardHeader>
+				<CardContent>
+					<p className="text-center text-muted-foreground">{member.role}</p>
+				</CardContent>
+				<CardFooter>
+					<p className="text-center">{member.description}</p>
+				</CardFooter>
+			</Card>
+		);
+	});
 
 	return (
 		<div className="container mx-auto px-4">
@@ -47,42 +57,19 @@ export default function Home() {
 			</section>
 
 			<section className="my-12">
-				<h2 className="text-3xl font-semibold mb-4">Meet Our Founders</h2>
+				<h2 className="text-3xl font-semibold mb-4">Meet Our Team</h2>
 				<p className="mb-8">
 					Our company was founded by a team of passionate individuals dedicated
 					to innovation and excellence. Each brings a unique set of skills and
 					experiences that drive our success.
 				</p>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-					{founders.map((founder) => (
-						<Card key={founder.name} className="flex flex-col">
-							<CardHeader>
-								<Image
-									src={founder.src}
-									alt={founder.name}
-									width={200}
-									height={200}
-									className="rounded-full mx-auto"
-								/>
-								<h3 className="text-xl font-semibold text-center">
-									{founder.name}
-								</h3>
-							</CardHeader>
-							<CardContent>
-								<p className="text-center text-muted-foreground">
-									{founder.role}
-								</p>
-							</CardContent>
-							<CardFooter>
-								<p className="text-center">{founder.description}</p>
-							</CardFooter>
-						</Card>
-					))}
+					{TeamMembers}
 				</div>
 				<p className="mt-8">
-					Together, our founders bring a wealth of experience and a shared
-					vision for the future of our industry. Their complementary skills and
-					unified approach drive innovation and excellence in everything we do.
+					Together, our team brings a wealth of experience and a shared vision
+					for the future of our industry. Their complementary skills and unified
+					approach drive innovation and excellence in everything we do.
 				</p>
 			</section>
 			<Footer />

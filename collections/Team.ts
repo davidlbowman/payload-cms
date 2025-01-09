@@ -51,7 +51,7 @@ export const Team: CollectionConfig = {
 			relationTo: "media",
 			required: true,
 			admin: {
-				description: "Profile photo (recommended size: 400x400px)",
+				description: "Profile photo (recommended size: 200x200px)",
 			},
 		},
 		{

@@ -10,7 +10,8 @@
 		"format": "bunx biome format --write",
 		"check": "bunx biome check",
 		"apply": "bunx biome check --fix --unsafe",
-		"generate": "payload generate:db-schema"
+		"db:generate": "payload generate:db-schema",
+		"types:generate": "bunx payload generate:types"
 	},
 	"dependencies": {
 		"@payloadcms/db-sqlite": "^3.15.1",

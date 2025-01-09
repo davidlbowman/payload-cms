@@ -122,7 +122,7 @@ export interface Team {
 	 */
 	description: string;
 	/**
-	 * Profile photo (recommended size: 400x400px)
+	 * Profile photo (recommended size: 200x200px)
 	 */
 	image: number | Media;
 	/**
