@@ -13,6 +13,7 @@ export interface Config {
 	collections: {
 		users: User;
 		media: Media;
+		Team: Team;
 		"payload-locked-documents": PayloadLockedDocument;
 		"payload-preferences": PayloadPreference;
 		"payload-migrations": PayloadMigration;
@@ -21,6 +22,7 @@ export interface Config {
 	collectionsSelect: {
 		users: UsersSelect<false> | UsersSelect<true>;
 		media: MediaSelect<false> | MediaSelect<true>;
+		Team: TeamSelect<false> | TeamSelect<true>;
 		"payload-locked-documents":
 			| PayloadLockedDocumentsSelect<false>
 			| PayloadLockedDocumentsSelect<true>;
@@ -100,6 +102,37 @@ export interface Media {
 	focalY?: number | null;
 }
 /**
+ * Manage team members and leadership profiles
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Team".
+ */
+export interface Team {
+	id: number;
+	/**
+	 * Full name of the team member
+	 */
+	name: string;
+	/**
+	 * Position or role in the company
+	 */
+	role: "CEO" | "CTO" | "COO" | "Developer" | "Designer" | "Product Manager";
+	/**
+	 * Brief biography or description of the team member
+	 */
+	description: string;
+	/**
+	 * Profile photo (recommended size: 400x400px)
+	 */
+	image: number | Media;
+	/**
+	 * Display order (lower numbers appear first)
+	 */
+	order?: number | null;
+	updatedAt: string;
+	createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
@@ -113,6 +146,10 @@ export interface PayloadLockedDocument {
 		| ({
 				relationTo: "media";
 				value: number | Media;
+		  } | null)
+		| ({
+				relationTo: "Team";
+				value: number | Team;
 		  } | null);
 	globalSlug?: string | null;
 	user: {
@@ -188,6 +225,19 @@ export interface MediaSelect<T extends boolean = true> {
 	height?: T;
 	focalX?: T;
 	focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "Team_select".
+ */
+export interface TeamSelect<T extends boolean = true> {
+	name?: T;
+	role?: T;
+	description?: T;
+	image?: T;
+	order?: T;
+	updatedAt?: T;
+	createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

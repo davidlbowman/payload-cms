@@ -3,12 +3,12 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev --turbopack",
+		"dev": "next dev",
 		"build": "next build",
 		"start": "next start",
 		"lint": "bunx biome lint --write",
 		"format": "bunx biome format --write",
-		"check": "bunx biome check --write",
+		"check": "bunx biome check",
 		"apply": "bunx biome check --fix --unsafe",
 		"generate": "payload generate:db-schema"
 	},
