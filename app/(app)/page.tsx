@@ -1,5 +1,11 @@
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+} from "@/components/ui/card";
 import Image from "next/image";
 
 export default function Home() {
@@ -47,24 +53,30 @@ export default function Home() {
 					to innovation and excellence. Each brings a unique set of skills and
 					experiences that drive our success.
 				</p>
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 					{founders.map((founder) => (
-						<div key={founder.name} className="bg-muted p-6 rounded-lg">
-							<Image
-								src={founder.src}
-								alt={founder.name}
-								width={200}
-								height={200}
-								className="rounded-full mx-auto mb-4"
-							/>
-							<h3 className="text-xl font-semibold text-center mb-2">
-								{founder.name}
-							</h3>
-							<p className="text-center text-muted-foreground mb-4">
-								{founder.role}
-							</p>
-							<p className="text-center">{founder.description}</p>
-						</div>
+						<Card key={founder.name} className="flex flex-col">
+							<CardHeader>
+								<Image
+									src={founder.src}
+									alt={founder.name}
+									width={200}
+									height={200}
+									className="rounded-full mx-auto"
+								/>
+								<h3 className="text-xl font-semibold text-center">
+									{founder.name}
+								</h3>
+							</CardHeader>
+							<CardContent>
+								<p className="text-center text-muted-foreground">
+									{founder.role}
+								</p>
+							</CardContent>
+							<CardFooter>
+								<p className="text-center">{founder.description}</p>
+							</CardFooter>
+						</Card>
 					))}
 				</div>
 				<p className="mt-8">

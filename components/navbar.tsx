@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Home } from "lucide-react";
-import { Menu } from "lucide-react";
+import {
+	Sheet,
+	SheetContent,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
+import { Home, Menu } from "lucide-react";
 import Link from "next/link";
 
 export function Navbar() {
@@ -28,6 +32,7 @@ export function Navbar() {
 						</Button>
 					</SheetTrigger>
 					<SheetContent side="right">
+						<SheetTitle className="text-left">Navigation Menu</SheetTitle>
 						<nav className="flex flex-col space-y-4">
 							<Link href="/about" className="text-foreground hover:underline">
 								About
