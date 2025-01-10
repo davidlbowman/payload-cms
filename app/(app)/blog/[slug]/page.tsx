@@ -26,7 +26,7 @@ export default async function ArticlePage({ params }: Props) {
 		depth: 1,
 	});
 
-	const article = docs[0];
+	const [article] = docs;
 	if (!article) notFound();
 
 	return (
