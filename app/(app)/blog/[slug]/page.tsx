@@ -1,3 +1,4 @@
+import { keyTakeawayConverter } from "@/components/KeyTakeaways";
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";
 import { isExpandedDoc } from "@/lib/utils";
@@ -41,7 +42,7 @@ export default async function ArticlePage({ params }: Props) {
 							new Date(article.publishedDate).toLocaleDateString()}
 					</p>
 				)}
-				<RichText data={article.content} />
+				<RichText data={article.content} converters={keyTakeawayConverter} />
 			</article>
 			<Footer />
 		</div>

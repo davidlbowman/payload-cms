@@ -1,10 +1,15 @@
-import { Lightbulb } from "lucide-react";
 import {
 	Accordion,
 	AccordionContent,
 	AccordionItem,
 	AccordionTrigger,
 } from "@/components/ui/accordion";
+import type {
+	JSXConvertersFunction,
+	SerializedLexicalNodeWithParent,
+} from "@payloadcms/richtext-lexical/react";
+import { Lightbulb } from "lucide-react";
+import type { Block } from "payload";
 
 interface KeyTakeawaysProps {
 	title?: string;
@@ -39,3 +44,49 @@ export function KeyTakeaways({
 		</Accordion>
 	);
 }
+
+export const KeyTakeawaysBlock: Block = {
+	slug: "keyTakeaways",
+	fields: [
+		{
+			name: "title",
+			type: "text",
+			defaultValue: "Key Takeaways",
+			required: false,
+		},
+		{
+			name: "points",
+			type: "array",
+			required: true,
+			fields: [
+				{
+					name: "point",
+					type: "text",
+					required: true,
+				},
+			],
+		},
+	],
+};
+
+interface KeyTakeawaysNode extends SerializedLexicalNodeWithParent {
+	fields: {
+		title?: string;
+		points: Array<{
+			point: string;
+		}>;
+	};
+}
+
+export const keyTakeawayConverter: JSXConvertersFunction = ({
+	defaultConverters,
+}) => ({
+	...defaultConverters,
+	blocks: {
+		keyTakeaways: ({ node }: { node: KeyTakeawaysNode }) => {
+			const points = node.fields.points.map((item) => item.point);
+
+			return <KeyTakeaways title={node.fields.title} points={points} />;
+		},
+	},
+});

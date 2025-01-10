@@ -1,4 +1,12 @@
-import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { KeyTakeawaysBlock } from "@/components/KeyTakeaways";
+import {
+	BlocksFeature,
+	FixedToolbarFeature,
+	HeadingFeature,
+	HorizontalRuleFeature,
+	InlineToolbarFeature,
+	lexicalEditor,
+} from "@payloadcms/richtext-lexical";
 import type { CollectionConfig } from "payload";
 
 export const Articles: CollectionConfig = {
@@ -52,7 +60,17 @@ export const Articles: CollectionConfig = {
 			name: "content",
 			type: "richText",
 			required: true,
-			editor: lexicalEditor({}),
+			editor: lexicalEditor({
+				features: ({ defaultFeatures }) => [
+					...defaultFeatures,
+					FixedToolbarFeature(),
+					InlineToolbarFeature(),
+					HorizontalRuleFeature(),
+					BlocksFeature({
+						blocks: [KeyTakeawaysBlock],
+					}),
+				],
+			}),
 			admin: {
 				description: "The main content of your article",
 			},
