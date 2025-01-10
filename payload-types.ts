@@ -14,6 +14,7 @@ export interface Config {
 		users: User;
 		media: Media;
 		Team: Team;
+		articles: Article;
 		"payload-locked-documents": PayloadLockedDocument;
 		"payload-preferences": PayloadPreference;
 		"payload-migrations": PayloadMigration;
@@ -23,6 +24,7 @@ export interface Config {
 		users: UsersSelect<false> | UsersSelect<true>;
 		media: MediaSelect<false> | MediaSelect<true>;
 		Team: TeamSelect<false> | TeamSelect<true>;
+		articles: ArticlesSelect<false> | ArticlesSelect<true>;
 		"payload-locked-documents":
 			| PayloadLockedDocumentsSelect<false>
 			| PayloadLockedDocumentsSelect<true>;
@@ -133,6 +135,49 @@ export interface Team {
 	createdAt: string;
 }
 /**
+ * Create and manage blog articles
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+	id: number;
+	title: string;
+	/**
+	 * Select the article author
+	 */
+	author: number | Team;
+	/**
+	 * URL-friendly version of the title (e.g., my-article-title)
+	 */
+	slug: string;
+	/**
+	 * The main content of your article
+	 */
+	content: {
+		root: {
+			type: string;
+			children: {
+				type: string;
+				version: number;
+				[k: string]: unknown;
+			}[];
+			direction: ("ltr" | "rtl") | null;
+			format: "left" | "start" | "center" | "right" | "end" | "justify" | "";
+			indent: number;
+			version: number;
+		};
+		[k: string]: unknown;
+	};
+	/**
+	 * The date this article was published
+	 */
+	publishedDate?: string | null;
+	updatedAt: string;
+	createdAt: string;
+	_status?: ("draft" | "published") | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
@@ -150,6 +195,10 @@ export interface PayloadLockedDocument {
 		| ({
 				relationTo: "Team";
 				value: number | Team;
+		  } | null)
+		| ({
+				relationTo: "articles";
+				value: number | Article;
 		  } | null);
 	globalSlug?: string | null;
 	user: {
@@ -238,6 +287,20 @@ export interface TeamSelect<T extends boolean = true> {
 	order?: T;
 	updatedAt?: T;
 	createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles_select".
+ */
+export interface ArticlesSelect<T extends boolean = true> {
+	title?: T;
+	author?: T;
+	slug?: T;
+	content?: T;
+	publishedDate?: T;
+	updatedAt?: T;
+	createdAt?: T;
+	_status?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

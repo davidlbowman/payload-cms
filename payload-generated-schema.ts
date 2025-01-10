@@ -74,6 +74,125 @@ export const media = sqliteTable(
 	}),
 );
 
+export const team = sqliteTable(
+	"team",
+	{
+		id: integer("id").primaryKey(),
+		name: text("name").notNull(),
+		role: text("role", {
+			enum: ["CEO", "CTO", "COO", "Developer", "Designer", "Product Manager"],
+		}).notNull(),
+		description: text("description").notNull(),
+		image: integer("image_id")
+			.notNull()
+			.references(() => media.id, {
+				onDelete: "set null",
+			}),
+		order: numeric("order").default("99"),
+		updatedAt: text("updated_at")
+			.notNull()
+			.default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`),
+	},
+	(columns) => ({
+		team_image_idx: index("team_image_idx").on(columns.image),
+		team_updated_at_idx: index("team_updated_at_idx").on(columns.updatedAt),
+		team_created_at_idx: index("team_created_at_idx").on(columns.createdAt),
+	}),
+);
+
+export const articles = sqliteTable(
+	"articles",
+	{
+		id: integer("id").primaryKey(),
+		title: text("title"),
+		author: integer("author_id").references(() => team.id, {
+			onDelete: "set null",
+		}),
+		slug: text("slug"),
+		content: text("content", { mode: "json" }),
+		publishedDate: text("published_date").default(
+			sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`,
+		),
+		updatedAt: text("updated_at")
+			.notNull()
+			.default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`),
+		_status: text("_status", { enum: ["draft", "published"] }).default("draft"),
+	},
+	(columns) => ({
+		articles_author_idx: index("articles_author_idx").on(columns.author),
+		articles_updated_at_idx: index("articles_updated_at_idx").on(
+			columns.updatedAt,
+		),
+		articles_created_at_idx: index("articles_created_at_idx").on(
+			columns.createdAt,
+		),
+		articles__status_idx: index("articles__status_idx").on(columns._status),
+	}),
+);
+
+export const _articles_v = sqliteTable(
+	"_articles_v",
+	{
+		id: integer("id").primaryKey(),
+		parent: integer("parent_id").references(() => articles.id, {
+			onDelete: "set null",
+		}),
+		version_title: text("version_title"),
+		version_author: integer("version_author_id").references(() => team.id, {
+			onDelete: "set null",
+		}),
+		version_slug: text("version_slug"),
+		version_content: text("version_content", { mode: "json" }),
+		version_publishedDate: text("version_published_date").default(
+			sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`,
+		),
+		version_updatedAt: text("version_updated_at").default(
+			sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`,
+		),
+		version_createdAt: text("version_created_at").default(
+			sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`,
+		),
+		version__status: text("version__status", {
+			enum: ["draft", "published"],
+		}).default("draft"),
+		createdAt: text("created_at")
+			.notNull()
+			.default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`),
+		updatedAt: text("updated_at")
+			.notNull()
+			.default(sql`(strftime('%Y-%m-%dT%H:%M:%fZ', 'now'))`),
+		latest: integer("latest", { mode: "boolean" }),
+	},
+	(columns) => ({
+		_articles_v_parent_idx: index("_articles_v_parent_idx").on(columns.parent),
+		_articles_v_version_version_author_idx: index(
+			"_articles_v_version_version_author_idx",
+		).on(columns.version_author),
+		_articles_v_version_version_updated_at_idx: index(
+			"_articles_v_version_version_updated_at_idx",
+		).on(columns.version_updatedAt),
+		_articles_v_version_version_created_at_idx: index(
+			"_articles_v_version_version_created_at_idx",
+		).on(columns.version_createdAt),
+		_articles_v_version_version__status_idx: index(
+			"_articles_v_version_version__status_idx",
+		).on(columns.version__status),
+		_articles_v_created_at_idx: index("_articles_v_created_at_idx").on(
+			columns.createdAt,
+		),
+		_articles_v_updated_at_idx: index("_articles_v_updated_at_idx").on(
+			columns.updatedAt,
+		),
+		_articles_v_latest_idx: index("_articles_v_latest_idx").on(columns.latest),
+	}),
+);
+
 export const payload_locked_documents = sqliteTable(
 	"payload_locked_documents",
 	{
@@ -108,6 +227,8 @@ export const payload_locked_documents_rels = sqliteTable(
 		path: text("path").notNull(),
 		usersID: integer("users_id"),
 		mediaID: integer("media_id"),
+		TeamID: integer("team_id"),
+		articlesID: integer("articles_id"),
 	},
 	(columns) => ({
 		order: index("payload_locked_documents_rels_order_idx").on(columns.order),
@@ -121,6 +242,12 @@ export const payload_locked_documents_rels = sqliteTable(
 		payload_locked_documents_rels_media_id_idx: index(
 			"payload_locked_documents_rels_media_id_idx",
 		).on(columns.mediaID),
+		payload_locked_documents_rels_team_id_idx: index(
+			"payload_locked_documents_rels_team_id_idx",
+		).on(columns.TeamID),
+		payload_locked_documents_rels_articles_id_idx: index(
+			"payload_locked_documents_rels_articles_id_idx",
+		).on(columns.articlesID),
 		parentFk: foreignKey({
 			columns: [columns.parent],
 			foreignColumns: [payload_locked_documents.id],
@@ -135,6 +262,16 @@ export const payload_locked_documents_rels = sqliteTable(
 			columns: [columns.mediaID],
 			foreignColumns: [media.id],
 			name: "payload_locked_documents_rels_media_fk",
+		}).onDelete("cascade"),
+		TeamIdFk: foreignKey({
+			columns: [columns.TeamID],
+			foreignColumns: [team.id],
+			name: "payload_locked_documents_rels_team_fk",
+		}).onDelete("cascade"),
+		articlesIdFk: foreignKey({
+			columns: [columns.articlesID],
+			foreignColumns: [articles.id],
+			name: "payload_locked_documents_rels_articles_fk",
 		}).onDelete("cascade"),
 	}),
 );
@@ -219,6 +356,32 @@ export const payload_migrations = sqliteTable(
 
 export const relations_users = relations(users, () => ({}));
 export const relations_media = relations(media, () => ({}));
+export const relations_team = relations(team, ({ one }) => ({
+	image: one(media, {
+		fields: [team.image],
+		references: [media.id],
+		relationName: "image",
+	}),
+}));
+export const relations_articles = relations(articles, ({ one }) => ({
+	author: one(team, {
+		fields: [articles.author],
+		references: [team.id],
+		relationName: "author",
+	}),
+}));
+export const relations__articles_v = relations(_articles_v, ({ one }) => ({
+	parent: one(articles, {
+		fields: [_articles_v.parent],
+		references: [articles.id],
+		relationName: "parent",
+	}),
+	version_author: one(team, {
+		fields: [_articles_v.version_author],
+		references: [team.id],
+		relationName: "version_author",
+	}),
+}));
 export const relations_payload_locked_documents_rels = relations(
 	payload_locked_documents_rels,
 	({ one }) => ({
@@ -236,6 +399,16 @@ export const relations_payload_locked_documents_rels = relations(
 			fields: [payload_locked_documents_rels.mediaID],
 			references: [media.id],
 			relationName: "media",
+		}),
+		TeamID: one(team, {
+			fields: [payload_locked_documents_rels.TeamID],
+			references: [team.id],
+			relationName: "Team",
+		}),
+		articlesID: one(articles, {
+			fields: [payload_locked_documents_rels.articlesID],
+			references: [articles.id],
+			relationName: "articles",
 		}),
 	}),
 );
@@ -278,6 +451,9 @@ export const relations_payload_migrations = relations(
 type DatabaseSchema = {
 	users: typeof users;
 	media: typeof media;
+	team: typeof team;
+	articles: typeof articles;
+	_articles_v: typeof _articles_v;
 	payload_locked_documents: typeof payload_locked_documents;
 	payload_locked_documents_rels: typeof payload_locked_documents_rels;
 	payload_preferences: typeof payload_preferences;
@@ -285,6 +461,9 @@ type DatabaseSchema = {
 	payload_migrations: typeof payload_migrations;
 	relations_users: typeof relations_users;
 	relations_media: typeof relations_media;
+	relations_team: typeof relations_team;
+	relations_articles: typeof relations_articles;
+	relations__articles_v: typeof relations__articles_v;
 	relations_payload_locked_documents_rels: typeof relations_payload_locked_documents_rels;
 	relations_payload_locked_documents: typeof relations_payload_locked_documents;
 	relations_payload_preferences_rels: typeof relations_payload_preferences_rels;

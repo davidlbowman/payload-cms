@@ -17,9 +17,6 @@ export function Navbar() {
 					<span className="font-bold">MyCompany</span>
 				</Link>
 				<div className="hidden md:flex space-x-4">
-					<Link href="/about" className="text-foreground hover:underline">
-						About
-					</Link>
 					<Link href="/blog" className="text-foreground hover:underline">
 						Blog
 					</Link>

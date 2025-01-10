@@ -8,9 +8,6 @@ export function Footer() {
 					&copy; 2024 MyCompany. All rights reserved.
 				</p>
 				<nav className="space-x-4">
-					<Link href="/about" className="text-foreground hover:underline">
-						About
-					</Link>
 					<Link href="/blog" className="text-foreground hover:underline">
 						Blog
 					</Link>
