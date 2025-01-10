@@ -6,7 +6,8 @@ import {
 	CardFooter,
 	CardHeader,
 } from "@/components/ui/card";
-import type { Team } from "@/payload-types";
+import { isExpandedDoc } from "@/lib/utils";
+import type { Media, Team } from "@/payload-types";
 import config from "@/payload.config";
 import Image from "next/image";
 import { getPayload } from "payload";
@@ -19,18 +20,19 @@ export default async function Home() {
 		sort: "order",
 	});
 
-	const TeamMembers = (teamMembers as Team[]).map((member) => {
-		const image = member.image as { url: string; alt: string };
+	const TeamMembers = teamMembers.map((member) => {
 		return (
 			<Card key={member.id} className="flex flex-col">
 				<CardHeader>
-					<Image
-						src={image.url}
-						alt={image.alt || member.name}
-						width={200}
-						height={200}
-						className="rounded-full mx-auto"
-					/>
+					{isExpandedDoc<Media>(member.image) && member.image.url && (
+						<Image
+							src={member.image.url}
+							alt={member.image.filename || member.name}
+							width={200}
+							height={200}
+							className="rounded-full mx-auto"
+						/>
+					)}
 					<h3 className="text-xl font-semibold text-center">{member.name}</h3>
 				</CardHeader>
 				<CardContent>
